@@ -18,6 +18,27 @@ Detail kebutuhan dan kriteria penerimaan tersedia di [PRD](PRD-PDKB-UPT-Manado.m
 
 Aturan branch, commit, dan kolaborasi tersedia di [Panduan Kontribusi](CONTRIBUTING.md).
 
+## Teknologi
+
+- React dan TypeScript
+- Vite
+- Fluent UI
+
+## Menjalankan Aplikasi
+
+```bash
+npm install
+npm run dev
+```
+
+Build produksi:
+
+```bash
+npm run build
+```
+
+Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Dokumentasi teknis tersedia di [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
 ## Tahapan
 
 1. Validasi kebutuhan dan alur kerja
@@ -26,7 +47,3 @@ Aturan branch, commit, dan kolaborasi tersedia di [Panduan Kontribusi](CONTRIBUT
 4. Pengujian internal
 5. User Acceptance Test (UAT)
 6. Perbaikan dan deployment
-
-## Catatan
-
-Teknologi, panduan instalasi, dan arsitektur akan ditambahkan setelah keputusan teknis dibuat.
