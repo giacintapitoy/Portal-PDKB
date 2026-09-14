@@ -37,7 +37,7 @@ Build produksi:
 npm run build
 ```
 
-Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Dokumentasi teknis tersedia di [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Lihat [dokumentasi teknis](docs/DEVELOPMENT.md) dan [roadmap branch](docs/BRANCH-ROADMAP.md).
 
 ## Tahapan
 
