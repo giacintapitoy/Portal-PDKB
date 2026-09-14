@@ -17,6 +17,8 @@ Portal ditujukan untuk penggunaan operasional internal. Antarmuka menggunakan Fl
 - Ikon: Lucide outline, stroke 1.75 px
 - Sidebar: dapat dibuka dan ditutup pada desktop, serta menjadi drawer pada mobile
 - Brand: logo PLN transparan dari aset yang diberikan pemilik proyek
+- Karakter Apple digunakan sebagai referensi kejernihan hierarchy, ketegasan kontras, dan kenyamanan kontrol. Bukan peniruan komponen native Apple atau glass effect.
+- Kontrol pencarian memakai label tetap, ikon yang menyatu, tombol hapus kontekstual, dan focus ring biru yang jelas.
 
 ## Struktur
 
