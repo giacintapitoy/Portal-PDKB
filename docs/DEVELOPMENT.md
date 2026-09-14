@@ -6,13 +6,15 @@ Branch pertama membangun fondasi frontend untuk memvalidasi struktur informasi P
 
 ## Arah Desain
 
-Portal ditujukan untuk penggunaan operasional internal. Antarmuka menggunakan Fluent UI dengan karakter enterprise yang tenang, aksesibel, dan cukup padat untuk pekerjaan harian.
+Portal ditujukan untuk penggunaan operasional internal. Antarmuka menggunakan Fluent UI dan mengikuti `DESIGN_SYSTEM_SOFT_BLUE_DASHBOARD.md` sebagai sumber visual utama.
 
-- Warna aksen: biru PLN dengan sidebar biru gelap
+- Warna utama: Soft Blue `#1694F5`
+- Surface: putih dan biru sangat muda
 - Tema: terang
-- Radius komponen: 12 px, tombol mengikuti Fluent UI
+- Radius kartu: 12-14 px
 - Motion: hanya feedback hover, active, serta transisi navigasi mobile
-- Font: Segoe UI Variable dengan fallback system font
+- Font: Inter yang disimpan sebagai dependency lokal
+- Ikon: Lucide outline, stroke 1.75 px
 - Sidebar: dapat dibuka dan ditutup pada desktop, serta menjadi drawer pada mobile
 - Brand: logo PLN transparan dari aset yang diberikan pemilik proyek
 
