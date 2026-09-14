@@ -20,9 +20,30 @@ Aturan branch, commit, dan kolaborasi tersedia di [Panduan Kontribusi](CONTRIBUT
 
 ## Teknologi
 
-- React dan TypeScript
-- Vite
-- Fluent UI
+### Frontend
+
+- **React 19** untuk antarmuka berbasis komponen
+- **TypeScript** untuk type safety
+- **Vite** sebagai development server dan build tool
+- **Fluent UI React Components** untuk komponen UI yang aksesibel
+- **Lucide React** sebagai satu-satunya keluarga ikon
+- **Inter** melalui `@fontsource/inter`
+- **CSS native** dengan token dari Soft Blue Dashboard Design System
+
+### Backend
+
+Belum ditentukan dan belum termasuk dalam tahap pengerjaan saat ini.
+
+## Struktur Frontend
+
+```text
+src/
+  App.tsx       halaman, state UI, dan data contoh
+  main.tsx      entry point, font, dan konfigurasi Fluent UI
+  styles.css    design tokens, komponen visual, dan responsive layout
+public/
+  pln-logo.png  aset logo PLN
+```
 
 ## Menjalankan Aplikasi
 
@@ -30,6 +51,8 @@ Aturan branch, commit, dan kolaborasi tersedia di [Panduan Kontribusi](CONTRIBUT
 npm install
 npm run dev
 ```
+
+Aplikasi tersedia melalui alamat lokal yang ditampilkan oleh Vite.
 
 Build produksi:
 
