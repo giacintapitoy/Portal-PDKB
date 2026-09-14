@@ -16,6 +16,8 @@ Portal berbasis web untuk membantu digitalisasi pengelolaan data Bagian PDKB PLN
 
 Detail kebutuhan dan kriteria penerimaan tersedia di [PRD](PRD-PDKB-UPT-Manado.md).
 
+Aturan branch, commit, dan kolaborasi tersedia di [Panduan Kontribusi](CONTRIBUTING.md).
+
 ## Tahapan
 
 1. Validasi kebutuhan dan alur kerja
