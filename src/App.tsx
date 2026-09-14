@@ -18,19 +18,23 @@ import {
   Tooltip,
 } from "@fluentui/react-components";
 import {
-  AlertRegular,
-  ArrowDownloadRegular,
-  BoxRegular,
-  CalendarClockRegular,
-  ChevronDownRegular,
-  ClipboardTaskListLtrRegular,
-  DocumentBulletListRegular,
-  GridRegular,
-  NavigationRegular,
-  PeopleTeamRegular,
-  SearchRegular,
-  SettingsRegular,
-} from "@fluentui/react-icons";
+  Bell,
+  Boxes,
+  CalendarClock,
+  ChevronDown,
+  ClipboardList,
+  Download,
+  FileChartColumn,
+  LayoutDashboard,
+  Menu as MenuIcon,
+  PackageCheck,
+  PanelLeftClose,
+  Search,
+  Settings,
+  ShieldCheck,
+  UsersRound,
+  Wrench,
+} from "lucide-react";
 
 type Page = "dashboard" | "peralatan" | "pemakaian" | "sertifikasi" | "laporan";
 type EquipmentStatus = "Tersedia" | "Digunakan" | "Inspeksi";
@@ -68,11 +72,11 @@ const certifications = [
 ];
 
 const navItems = [
-  { id: "dashboard" as const, label: "Dashboard", icon: GridRegular },
-  { id: "peralatan" as const, label: "Peralatan", icon: BoxRegular },
-  { id: "pemakaian" as const, label: "Pemakaian", icon: ClipboardTaskListLtrRegular },
-  { id: "sertifikasi" as const, label: "Sertifikasi", icon: PeopleTeamRegular },
-  { id: "laporan" as const, label: "Laporan", icon: DocumentBulletListRegular },
+  { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
+  { id: "peralatan" as const, label: "Peralatan", icon: Boxes },
+  { id: "pemakaian" as const, label: "Pemakaian", icon: ClipboardList },
+  { id: "sertifikasi" as const, label: "Sertifikasi", icon: UsersRound },
+  { id: "laporan" as const, label: "Laporan", icon: FileChartColumn },
 ];
 
 const pageTitles: Record<Page, { title: string; description: string }> = {
@@ -92,7 +96,7 @@ function StatusBadge({ status }: { status: EquipmentStatus }) {
 function EmptyFeature({ title, description }: { title: string; description: string }) {
   return (
     <section className="empty-state" aria-labelledby="empty-title">
-      <ClipboardTaskListLtrRegular fontSize={28} aria-hidden="true" />
+      <ClipboardList size={26} strokeWidth={1.75} aria-hidden="true" />
       <h2 id="empty-title">{title}</h2>
       <p>{description}</p>
     </section>
@@ -139,21 +143,6 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
         <MessageBarBody><strong>3 sertifikasi dan 2 inspeksi</strong> memerlukan tindak lanjut dalam 60 hari.</MessageBarBody>
       </MessageBar>
 
-      <section className="metric-grid" aria-label="Ringkasan data">
-        <Card className="metric metric-primary">
-          <span>Total peralatan</span><strong>184</strong><small>171 aktif digunakan</small>
-        </Card>
-        <Card className="metric">
-          <span>Sedang digunakan</span><strong>12</strong><small>6 kegiatan berjalan</small>
-        </Card>
-        <Card className="metric">
-          <span>Perlu inspeksi</span><strong>7</strong><small>2 jatuh tempo bulan ini</small>
-        </Card>
-        <Card className="metric">
-          <span>Sertifikat aktif</span><strong>46</strong><small>3 segera berakhir</small>
-        </Card>
-      </section>
-
       <div className="dashboard-grid">
         <section className="panel equipment-panel" aria-labelledby="equipment-heading">
           <div className="panel-heading">
@@ -163,20 +152,36 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
           <EquipmentTable rows={equipment.slice(0, 3)} />
         </section>
 
-        <section className="panel reminder-panel" aria-labelledby="reminder-heading">
-          <div className="panel-heading">
-            <div><h2 id="reminder-heading">Jatuh tempo</h2><p>Urutan berdasarkan waktu terdekat.</p></div>
-            <CalendarClockRegular fontSize={22} aria-hidden="true" />
-          </div>
-          <div className="reminder-list">
-            {certifications.map((item) => (
-              <article className="reminder" key={item.name}>
-                <div><strong>{item.name}</strong><span>{item.certification}</span><small>{item.team}</small></div>
-                <div className="due"><strong>{item.days} hari</strong><span>{item.due}</span></div>
-              </article>
-            ))}
-          </div>
-        </section>
+        <div className="dashboard-side">
+          <section className="metric-grid" aria-label="Ringkasan data">
+            <Card className="metric">
+              <span className="metric-icon cyan"><PackageCheck size={18} strokeWidth={1.75} /></span>
+              <span className="metric-copy"><small>Total peralatan</small><strong>184</strong></span>
+            </Card>
+            <Card className="metric">
+              <span className="metric-icon purple"><ClipboardList size={18} strokeWidth={1.75} /></span>
+              <span className="metric-copy"><small>Sedang digunakan</small><strong>12</strong></span>
+            </Card>
+            <Card className="metric">
+              <span className="metric-icon yellow"><Wrench size={18} strokeWidth={1.75} /></span>
+              <span className="metric-copy"><small>Perlu inspeksi</small><strong>7</strong></span>
+            </Card>
+            <Card className="metric">
+              <span className="metric-icon green"><ShieldCheck size={18} strokeWidth={1.75} /></span>
+              <span className="metric-copy"><small>Sertifikat aktif</small><strong>46</strong></span>
+            </Card>
+          </section>
+
+          <section className="reminder-banner" aria-labelledby="reminder-heading">
+            <div>
+              <span>REMINDER</span>
+              <h2 id="reminder-heading">Tiga sertifikasi segera berakhir</h2>
+              <p>Jadwal terdekat pada 24 September 2026.</p>
+            </div>
+            <Button appearance="secondary" onClick={() => setPage("sertifikasi")}>Tinjau</Button>
+            <CalendarClock size={54} strokeWidth={1.25} aria-hidden="true" />
+          </section>
+        </div>
       </div>
     </>
   );
@@ -218,21 +223,21 @@ export default function App() {
           <img src="/pln-logo.png" alt="PLN" />
           <div className="brand-copy"><strong>Portal PDKB</strong><small>UPT Manado</small></div>
           <Tooltip content={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"} relationship="label">
-            <Button className="collapse-button" appearance="subtle" icon={<NavigationRegular />} aria-label={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar} />
+            <Button className="collapse-button" appearance="subtle" icon={<PanelLeftClose size={17} strokeWidth={1.75} />} aria-label={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar} />
           </Tooltip>
         </div>
         <nav aria-label="Navigasi utama">
           {navItems.map(({ id, label, icon: Icon }) => (
             <Tooltip content={label} relationship="label" positioning="after" key={id}>
               <button className={page === id ? "nav-item active" : "nav-item"} onClick={() => navigate(id)} aria-current={page === id ? "page" : undefined}>
-                <Icon fontSize={20} aria-hidden="true" /><span>{label}</span>
+                <Icon size={17} strokeWidth={1.75} aria-hidden="true" /><span>{label}</span>
               </button>
             </Tooltip>
           ))}
         </nav>
         <div className="sidebar-footer">
           <Tooltip content="Pengaturan" relationship="label" positioning="after">
-            <Button appearance="subtle" icon={<SettingsRegular />} className="settings-button"><span>Pengaturan</span></Button>
+            <Button appearance="subtle" icon={<Settings size={17} strokeWidth={1.75} />} className="settings-button"><span>Pengaturan</span></Button>
           </Tooltip>
           <Tooltip content="Admin PDKB" relationship="label" positioning="after">
             <div className="profile"><span>AR</span><div><strong>Admin PDKB</strong><small>Administrator</small></div></div>
@@ -242,12 +247,12 @@ export default function App() {
 
       <main>
         <header className="topbar">
-          <Button className="menu-button" appearance="subtle" icon={<NavigationRegular />} aria-label="Buka navigasi" onClick={() => setMobileNavOpen((open) => !open)} />
+          <Button className="menu-button" appearance="subtle" icon={<MenuIcon size={18} strokeWidth={1.75} />} aria-label="Buka navigasi" onClick={() => setMobileNavOpen((open) => !open)} />
           <div className="mobile-brand"><img src="/pln-logo.png" alt="" /><span>Portal PDKB</span></div>
           <div className="topbar-actions">
-            <Tooltip content="Notifikasi" relationship="label"><Button appearance="subtle" icon={<AlertRegular />} aria-label="Notifikasi" /></Tooltip>
+            <Tooltip content="Notifikasi" relationship="label"><Button appearance="subtle" icon={<Bell size={17} strokeWidth={1.75} />} aria-label="Notifikasi" /></Tooltip>
             <Menu>
-              <MenuTrigger disableButtonEnhancement><Button appearance="subtle" iconPosition="after" icon={<ChevronDownRegular />}>Admin PDKB</Button></MenuTrigger>
+              <MenuTrigger disableButtonEnhancement><Button appearance="subtle" iconPosition="after" icon={<ChevronDown size={15} strokeWidth={1.75} />}>Admin PDKB</Button></MenuTrigger>
               <MenuPopover><MenuList><MenuItem>Profil</MenuItem><MenuItem>Keluar</MenuItem></MenuList></MenuPopover>
             </Menu>
           </div>
@@ -256,9 +261,9 @@ export default function App() {
         <div className="content">
           <div className="page-heading">
             <div><p className="context-label">PDKB UPT MANADO</p><h1>{currentPage.title}</h1><p>{currentPage.description}</p></div>
-            {page === "peralatan" && <Button appearance="primary" icon={<BoxRegular />}>Tambah peralatan</Button>}
-            {page === "sertifikasi" && <Button appearance="primary" icon={<PeopleTeamRegular />}>Tambah sertifikasi</Button>}
-            {page === "laporan" && <Button appearance="primary" icon={<ArrowDownloadRegular />}>Ekspor laporan</Button>}
+            {page === "peralatan" && <Button appearance="primary" icon={<Boxes size={16} strokeWidth={1.75} />}>Tambah peralatan</Button>}
+            {page === "sertifikasi" && <Button appearance="primary" icon={<UsersRound size={16} strokeWidth={1.75} />}>Tambah sertifikasi</Button>}
+            {page === "laporan" && <Button appearance="primary" icon={<Download size={16} strokeWidth={1.75} />}>Ekspor laporan</Button>}
           </div>
 
           {loading ? <div className="loading-state"><Spinner label="Memuat data" /></div> : (
@@ -267,7 +272,7 @@ export default function App() {
               {page === "peralatan" && (
                 <section className="panel">
                   <div className="toolbar">
-                    <Input aria-label="Cari peralatan" contentBefore={<SearchRegular />} placeholder="Cari nama, kode, atau lokasi" value={query} onChange={(_, data) => setQuery(data.value)} />
+                    <Input aria-label="Cari peralatan" contentBefore={<Search size={16} strokeWidth={1.75} />} placeholder="Cari nama, kode, atau lokasi" value={query} onChange={(_, data) => setQuery(data.value)} />
                     <Select aria-label="Filter kategori" value={category} onChange={(_, data) => setCategory(data.value)}>
                       <option>Semua</option><option>Isolasi</option><option>K3</option><option>Metal</option><option>Pendukung</option>
                     </Select>
