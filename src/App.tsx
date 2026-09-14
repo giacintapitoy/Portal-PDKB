@@ -187,6 +187,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Semua");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem("pdkb-sidebar") === "collapsed");
   const [loading, setLoading] = useState(false);
 
   const filteredEquipment = useMemo(
@@ -203,27 +204,46 @@ export default function App() {
 
   const currentPage = pageTitles[page];
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed((collapsed) => {
+      localStorage.setItem("pdkb-sidebar", collapsed ? "expanded" : "collapsed");
+      return !collapsed;
+    });
+  };
+
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <aside className={`sidebar ${mobileNavOpen ? "sidebar-open" : ""}`}>
-        <div className="brand"><span className="brand-mark">P</span><div><strong>Portal PDKB</strong><small>UPT Manado</small></div></div>
+        <div className="brand">
+          <img src="/pln-logo.png" alt="PLN" />
+          <div className="brand-copy"><strong>Portal PDKB</strong><small>UPT Manado</small></div>
+          <Tooltip content={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"} relationship="label">
+            <Button className="collapse-button" appearance="subtle" icon={<NavigationRegular />} aria-label={sidebarCollapsed ? "Buka sidebar" : "Tutup sidebar"} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar} />
+          </Tooltip>
+        </div>
         <nav aria-label="Navigasi utama">
           {navItems.map(({ id, label, icon: Icon }) => (
-            <button className={page === id ? "nav-item active" : "nav-item"} onClick={() => navigate(id)} key={id}>
-              <Icon fontSize={20} aria-hidden="true" /><span>{label}</span>
-            </button>
+            <Tooltip content={label} relationship="label" positioning="after" key={id}>
+              <button className={page === id ? "nav-item active" : "nav-item"} onClick={() => navigate(id)} aria-current={page === id ? "page" : undefined}>
+                <Icon fontSize={20} aria-hidden="true" /><span>{label}</span>
+              </button>
+            </Tooltip>
           ))}
         </nav>
         <div className="sidebar-footer">
-          <Button appearance="subtle" icon={<SettingsRegular />} className="settings-button">Pengaturan</Button>
-          <div className="profile"><span>AR</span><div><strong>Admin PDKB</strong><small>Administrator</small></div></div>
+          <Tooltip content="Pengaturan" relationship="label" positioning="after">
+            <Button appearance="subtle" icon={<SettingsRegular />} className="settings-button"><span>Pengaturan</span></Button>
+          </Tooltip>
+          <Tooltip content="Admin PDKB" relationship="label" positioning="after">
+            <div className="profile"><span>AR</span><div><strong>Admin PDKB</strong><small>Administrator</small></div></div>
+          </Tooltip>
         </div>
       </aside>
 
       <main>
         <header className="topbar">
           <Button className="menu-button" appearance="subtle" icon={<NavigationRegular />} aria-label="Buka navigasi" onClick={() => setMobileNavOpen((open) => !open)} />
-          <div className="mobile-brand">Portal PDKB</div>
+          <div className="mobile-brand"><img src="/pln-logo.png" alt="" /><span>Portal PDKB</span></div>
           <div className="topbar-actions">
             <Tooltip content="Notifikasi" relationship="label"><Button appearance="subtle" icon={<AlertRegular />} aria-label="Notifikasi" /></Tooltip>
             <Menu>

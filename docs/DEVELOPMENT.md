@@ -8,11 +8,13 @@ Branch pertama membangun fondasi frontend untuk memvalidasi struktur informasi P
 
 Portal ditujukan untuk penggunaan operasional internal. Antarmuka menggunakan Fluent UI dengan karakter enterprise yang tenang, aksesibel, dan cukup padat untuk pekerjaan harian.
 
-- Warna aksen: teal gelap
+- Warna aksen: biru PLN dengan sidebar biru gelap
 - Tema: terang
 - Radius komponen: 12 px, tombol mengikuti Fluent UI
 - Motion: hanya feedback hover, active, serta transisi navigasi mobile
 - Font: Segoe UI Variable dengan fallback system font
+- Sidebar: dapat dibuka dan ditutup pada desktop, serta menjadi drawer pada mobile
+- Brand: logo PLN transparan dari aset yang diberikan pemilik proyek
 
 ## Struktur
 
