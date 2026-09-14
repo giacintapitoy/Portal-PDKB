@@ -43,6 +43,7 @@ nav { display: grid; gap: 4px; }
 .sidebar-collapsed .brand img { width: 34px; height: 44px; flex-basis: 44px; }
 .sidebar-collapsed .collapse-button { margin: 0; transform: rotate(180deg); }
 .sidebar-collapsed .nav-item, .sidebar-collapsed .settings-button { justify-content: center !important; padding-inline: 0; }
+.sidebar-collapsed .settings-button { width: 48px !important; min-width: 48px !important; }
 .sidebar-collapsed .sidebar-footer { justify-items: center; width: 48px; }
 .sidebar-collapsed .profile { width: 48px; justify-content: center; padding-inline: 0; }
 
