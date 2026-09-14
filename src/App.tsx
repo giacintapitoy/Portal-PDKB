@@ -174,7 +174,6 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
 
           <section className="reminder-banner" aria-labelledby="reminder-heading">
             <div>
-              <span>REMINDER</span>
               <h2 id="reminder-heading">Tiga sertifikasi segera berakhir</h2>
               <p>Jadwal terdekat pada 24 September 2026.</p>
             </div>
@@ -260,7 +259,7 @@ export default function App() {
 
         <div className="content">
           <div className="page-heading">
-            <div><p className="context-label">PDKB UPT MANADO</p><h1>{currentPage.title}</h1><p>{currentPage.description}</p></div>
+            <div><h1>{currentPage.title}</h1><p>{currentPage.description}</p></div>
             {page === "peralatan" && <Button appearance="primary" icon={<Boxes size={16} strokeWidth={1.75} />}>Tambah peralatan</Button>}
             {page === "sertifikasi" && <Button appearance="primary" icon={<UsersRound size={16} strokeWidth={1.75} />}>Tambah sertifikasi</Button>}
             {page === "laporan" && <Button appearance="primary" icon={<Download size={16} strokeWidth={1.75} />}>Ekspor laporan</Button>}

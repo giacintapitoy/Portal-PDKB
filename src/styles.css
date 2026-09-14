@@ -79,9 +79,8 @@ main { min-width: 0; }
 .mobile-brand img { width: 24px; height: 32px; object-fit: contain; }
 .content { width: min(100%, 1320px); margin: 0 auto; padding: 24px 24px 48px; }
 .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
-.page-heading h1 { margin: 2px 0 4px; color: var(--text-primary); font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -.02em; }
+.page-heading h1 { margin: 0 0 4px; color: var(--text-primary); font-size: 24px; line-height: 32px; font-weight: 700; letter-spacing: -.02em; }
 .page-heading > div > p:last-child { max-width: 620px; margin: 0; color: var(--text-secondary); font-size: 13px; line-height: 20px; }
-.context-label { margin: 0; color: var(--primary); font-size: 10px; line-height: 16px; font-weight: 600; letter-spacing: .02em; }
 .attention-bar { margin-bottom: 16px; border-radius: var(--radius-md) !important; font-size: 12px; }
 
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(340px, .75fr); align-items: stretch; gap: 16px; }
@@ -94,7 +93,7 @@ main { min-width: 0; }
 .metric-icon.yellow { color: #a26f00; background: #fff7dc; }
 .metric-icon.green { color: #21845c; background: #e8f7f0; }
 .metric-copy { display: grid; min-width: 0; gap: 2px; }
-.metric-copy small { overflow: hidden; color: var(--text-secondary); font-size: 10px; line-height: 16px; font-weight: 600; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+.metric-copy small { overflow: hidden; color: var(--text-secondary); font-size: 10px; line-height: 16px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .metric-copy strong { color: var(--text-primary); font-size: 22px; line-height: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .panel { overflow: hidden; border: 1px solid var(--border-default); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-card); }
@@ -115,8 +114,7 @@ td span { margin-top: 2px; color: var(--text-muted); font-size: 9px; line-height
 
 .reminder-banner { position: relative; display: flex; min-height: 126px; align-items: end; justify-content: space-between; gap: 16px; padding: 18px; overflow: hidden; border-radius: 12px; color: #ffffff; background: linear-gradient(110deg, #138deb, #37acf8); box-shadow: 0 8px 20px rgba(22, 148, 245, .14); }
 .reminder-banner > div { position: relative; z-index: 1; max-width: 220px; }
-.reminder-banner span { font-size: 9px; line-height: 16px; font-weight: 600; letter-spacing: .04em; }
-.reminder-banner h2 { margin: 2px 0 4px; font-size: 16px; line-height: 21px; font-weight: 700; }
+.reminder-banner h2 { margin: 0 0 4px; font-size: 16px; line-height: 21px; font-weight: 700; }
 .reminder-banner p { margin: 0; color: rgba(255, 255, 255, .86); font-size: 10px; line-height: 16px; }
 .reminder-banner > button { position: relative; z-index: 1; flex: 0 0 auto; color: var(--primary-700) !important; background: #ffffff !important; }
 .reminder-banner > svg { position: absolute; top: 12px; right: 14px; color: rgba(255, 255, 255, .24); }
