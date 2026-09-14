@@ -1,0 +1,154 @@
+import { type FormEvent, useMemo, useState } from "react";
+import {
+  Badge,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+  Field,
+  Input,
+  MessageBar,
+  MessageBarBody,
+  Select,
+  Textarea,
+} from "@fluentui/react-components";
+import { Eye, Plus, Search, SlidersHorizontal } from "lucide-react";
+import { filterEquipment, formatDate, initialEquipment, type Equipment, type EquipmentStatus } from "./data";
+
+function StatusBadge({ status }: { status: EquipmentStatus }) {
+  const appearance = status === "Tersedia" ? "filled" : "tint";
+  const color = status === "Tersedia" ? "success" : status === "Inspeksi" ? "warning" : "informative";
+  return <Badge appearance={appearance} color={color}>{status}</Badge>;
+}
+
+export default function EquipmentPage() {
+  const [rows, setRows] = useState(initialEquipment);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("Semua");
+  const [status, setStatus] = useState("Semua");
+  const [addOpen, setAddOpen] = useState(false);
+  const [selected, setSelected] = useState<Equipment | null>(null);
+  const [formError, setFormError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  const filteredRows = useMemo(
+    () => filterEquipment(rows, query, category, status),
+    [rows, query, category, status],
+  );
+
+  const addEquipment = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const code = String(form.get("code") ?? "").trim();
+
+    if (rows.some((item) => item.code.toLocaleLowerCase("id-ID") === code.toLocaleLowerCase("id-ID"))) {
+      setFormError("Kode inventaris sudah digunakan. Masukkan kode yang berbeda.");
+      return;
+    }
+
+    const item: Equipment = {
+      code,
+      name: String(form.get("name")),
+      category: String(form.get("category")),
+      serialNumber: String(form.get("serialNumber")),
+      origin: String(form.get("origin")),
+      acquiredAt: String(form.get("acquiredAt")) || undefined,
+      condition: String(form.get("condition")) as Equipment["condition"],
+      location: String(form.get("location")),
+      status: String(form.get("status")) as EquipmentStatus,
+      nextInspection: String(form.get("nextInspection")),
+      notes: String(form.get("notes")) || undefined,
+    };
+
+    setRows((current) => [item, ...current]);
+    setNotice(`${item.name} berhasil ditambahkan sebagai data contoh.`);
+    setFormError("");
+    setAddOpen(false);
+    event.currentTarget.reset();
+  };
+
+  return (
+    <>
+      {notice && <MessageBar intent="success" className="equipment-notice"><MessageBarBody>{notice}</MessageBarBody></MessageBar>}
+
+      <section className="panel equipment-management" aria-labelledby="equipment-list-title">
+        <div className="feature-toolbar">
+          <div>
+            <h2 id="equipment-list-title">Daftar peralatan</h2>
+            <p>{filteredRows.length} dari {rows.length} peralatan ditampilkan</p>
+          </div>
+          <Button appearance="primary" icon={<Plus size={16} strokeWidth={1.75} />} onClick={() => setAddOpen(true)}>Tambah peralatan</Button>
+        </div>
+
+        <div className="equipment-filters" aria-label="Filter peralatan">
+          <Input aria-label="Cari peralatan" contentBefore={<Search size={16} strokeWidth={1.75} />} placeholder="Cari nama, kode, nomor seri, atau lokasi" value={query} onChange={(_, data) => setQuery(data.value)} />
+          <div className="filter-select"><SlidersHorizontal size={15} strokeWidth={1.75} aria-hidden="true" /><Select aria-label="Filter kategori" value={category} onChange={(_, data) => setCategory(data.value)}><option>Semua</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select></div>
+          <Select aria-label="Filter status" value={status} onChange={(_, data) => setStatus(data.value)}><option>Semua</option><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select>
+        </div>
+
+        {filteredRows.length ? (
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Peralatan</th><th scope="col">Nomor seri</th><th scope="col">Kategori</th><th scope="col">Lokasi</th><th scope="col">Status</th><th scope="col">Inspeksi</th><th scope="col"><span className="sr-only">Aksi</span></th></tr></thead>
+              <tbody>{filteredRows.map((item) => (
+                <tr key={item.code}>
+                  <td><strong>{item.name}</strong><span>{item.code}</span></td>
+                  <td>{item.serialNumber}</td><td>{item.category}</td><td>{item.location}</td><td><StatusBadge status={item.status} /></td><td>{formatDate(item.nextInspection)}</td>
+                  <td><Button appearance="subtle" icon={<Eye size={15} strokeWidth={1.75} />} aria-label={`Lihat ${item.name}`} onClick={() => setSelected(item)}><span className="action-label">Lihat</span></Button></td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="equipment-empty"><Search size={24} strokeWidth={1.75} /><h3>Peralatan tidak ditemukan</h3><p>Ubah kata pencarian atau filter yang dipilih.</p><Button appearance="secondary" onClick={() => { setQuery(""); setCategory("Semua"); setStatus("Semua"); }}>Reset filter</Button></div>
+        )}
+      </section>
+
+      <Dialog open={addOpen} onOpenChange={(_, data) => { setAddOpen(data.open); setFormError(""); }}>
+        <DialogSurface className="equipment-dialog">
+          <form onSubmit={addEquipment}>
+            <DialogBody>
+              <DialogTitle>Tambah peralatan</DialogTitle>
+              <DialogContent>
+                <p className="dialog-description">Lengkapi identitas dan status awal peralatan. Data tersimpan sementara pada sesi ini.</p>
+                {formError && <MessageBar intent="error"><MessageBarBody>{formError}</MessageBarBody></MessageBar>}
+                <div className="equipment-form">
+                  <Field label="Kode inventaris" required><Input name="code" required placeholder="Contoh: PDKB-ISO-015" /></Field>
+                  <Field label="Nama peralatan" required><Input name="name" required /></Field>
+                  <Field label="Nomor seri" required><Input name="serialNumber" required /></Field>
+                  <Field label="Kategori" required><Select name="category" required><option value="">Pilih kategori</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select></Field>
+                  <Field label="Asal-usul" required><Input name="origin" required /></Field>
+                  <Field label="Tanggal perolehan"><Input name="acquiredAt" type="date" /></Field>
+                  <Field label="Kondisi" required><Select name="condition" required><option>Baik</option><option>Perlu pemeriksaan</option><option>Rusak</option></Select></Field>
+                  <Field label="Status" required><Select name="status" required><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select></Field>
+                  <Field label="Lokasi" required><Input name="location" required /></Field>
+                  <Field label="Inspeksi berikutnya" required><Input name="nextInspection" type="date" required /></Field>
+                  <Field className="form-wide" label="Catatan"><Textarea name="notes" resize="vertical" /></Field>
+                </div>
+              </DialogContent>
+              <DialogActions><Button appearance="secondary" type="button" onClick={() => setAddOpen(false)}>Batal</Button><Button appearance="primary" type="submit">Simpan peralatan</Button></DialogActions>
+            </DialogBody>
+          </form>
+        </DialogSurface>
+      </Dialog>
+
+      <Dialog open={Boolean(selected)} onOpenChange={(_, data) => !data.open && setSelected(null)}>
+        <DialogSurface className="equipment-dialog detail-dialog">
+          {selected && <DialogBody><DialogTitle>{selected.name}</DialogTitle><DialogContent>
+            <div className="detail-status"><StatusBadge status={selected.status} /><span>{selected.code}</span></div>
+            <dl className="equipment-details">
+              <div><dt>Nomor seri</dt><dd>{selected.serialNumber}</dd></div><div><dt>Kategori</dt><dd>{selected.category}</dd></div>
+              <div><dt>Kondisi</dt><dd>{selected.condition}</dd></div><div><dt>Lokasi</dt><dd>{selected.location}</dd></div>
+              <div><dt>Asal-usul</dt><dd>{selected.origin}</dd></div><div><dt>Tanggal perolehan</dt><dd>{selected.acquiredAt ? formatDate(selected.acquiredAt) : "Belum dicatat"}</dd></div>
+              <div><dt>Inspeksi berikutnya</dt><dd>{formatDate(selected.nextInspection)}</dd></div><div><dt>Catatan</dt><dd>{selected.notes || "Tidak ada catatan"}</dd></div>
+            </dl>
+            <section className="history-preview"><h3>Riwayat terbaru</h3><div><span>14 Sep 2026</span><p>Status diperiksa oleh Admin PDKB.</p></div><div><span>8 Sep 2026</span><p>Lokasi diperbarui menjadi {selected.location}.</p></div></section>
+          </DialogContent><DialogActions><Button appearance="primary" onClick={() => setSelected(null)}>Tutup</Button></DialogActions></DialogBody>}
+        </DialogSurface>
+      </Dialog>
+    </>
+  );
+}
