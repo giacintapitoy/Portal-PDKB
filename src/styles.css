@@ -36,14 +36,15 @@ nav { display: grid; gap: 4px; }
 .sidebar-footer { display: grid; gap: 14px; margin-top: auto; padding-top: 18px; border-top: 1px solid #2c5967; }
 .settings-button { width: 100% !important; justify-content: flex-start !important; color: #d8e9ec !important; }
 .profile { display: flex; align-items: center; gap: 10px; padding: 8px; }
-.profile > span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #073c4c; background: #bfe4e9; font-size: 12px; font-weight: 700; }
+.profile > span { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%; color: #073c4c; background: #bfe4e9; font-size: 12px; font-weight: 700; }
 .profile strong { font-size: 13px; }
 .sidebar-collapsed .brand-copy, .sidebar-collapsed .nav-item span, .sidebar-collapsed .settings-button span, .sidebar-collapsed .profile div { display: none; }
 .sidebar-collapsed .brand { flex-direction: column; gap: 6px; padding-bottom: 18px; }
 .sidebar-collapsed .brand img { width: 34px; height: 44px; flex-basis: 44px; }
 .sidebar-collapsed .collapse-button { margin: 0; transform: rotate(180deg); }
 .sidebar-collapsed .nav-item, .sidebar-collapsed .settings-button { justify-content: center !important; padding-inline: 0; }
-.sidebar-collapsed .profile { justify-content: center; padding-inline: 0; }
+.sidebar-collapsed .sidebar-footer { justify-items: center; width: 48px; }
+.sidebar-collapsed .profile { width: 48px; justify-content: center; padding-inline: 0; }
 
 main { min-width: 0; }
 .topbar { height: 64px; display: flex; align-items: center; justify-content: flex-end; padding: 0 32px; border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, .94); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; }
@@ -114,6 +115,7 @@ td span { margin-top: 3px; color: var(--muted); font-size: 11px; }
   .sidebar-collapsed .brand-copy, .sidebar-collapsed .nav-item span, .sidebar-collapsed .settings-button span, .sidebar-collapsed .profile div { display: grid; }
   .sidebar-collapsed .nav-item, .sidebar-collapsed .settings-button { justify-content: flex-start !important; padding-inline: 12px; }
   .sidebar-collapsed .profile { justify-content: flex-start; padding-inline: 8px; }
+  .sidebar-collapsed .sidebar-footer { justify-items: stretch; width: auto; }
   .collapse-button { display: none !important; }
   .topbar { justify-content: space-between; height: 60px; padding: 0 14px; }
   .menu-button, .mobile-brand { display: inline-flex !important; }
