@@ -15,7 +15,7 @@ import {
   Select,
   Textarea,
 } from "@fluentui/react-components";
-import { Eye, Plus, Search, SlidersHorizontal } from "lucide-react";
+import { Eye, Plus, Search, X } from "lucide-react";
 import { filterEquipment, formatDate, initialEquipment, type Equipment, type EquipmentStatus } from "./data";
 
 function StatusBadge({ status }: { status: EquipmentStatus }) {
@@ -83,11 +83,28 @@ export default function EquipmentPage() {
           <Button appearance="primary" icon={<Plus size={16} strokeWidth={1.75} />} onClick={() => setAddOpen(true)}>Tambah peralatan</Button>
         </div>
 
-        <div className="equipment-filters" aria-label="Filter peralatan">
-          <Input aria-label="Cari peralatan" contentBefore={<Search size={16} strokeWidth={1.75} />} placeholder="Cari nama, kode, nomor seri, atau lokasi" value={query} onChange={(_, data) => setQuery(data.value)} />
-          <div className="filter-select"><SlidersHorizontal size={15} strokeWidth={1.75} aria-hidden="true" /><Select aria-label="Filter kategori" value={category} onChange={(_, data) => setCategory(data.value)}><option>Semua</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select></div>
-          <Select aria-label="Filter status" value={status} onChange={(_, data) => setStatus(data.value)}><option>Semua</option><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select>
-        </div>
+        <section className="equipment-filters" aria-labelledby="equipment-filter-title">
+          <h3 id="equipment-filter-title" className="sr-only">Filter peralatan</h3>
+          <div className="search-field">
+            <label htmlFor="equipment-search">Cari peralatan</label>
+            <Input
+              id="equipment-search"
+              contentBefore={<Search size={17} strokeWidth={1.75} />}
+              contentAfter={query ? <Button className="search-clear" appearance="subtle" size="small" icon={<X size={14} strokeWidth={1.75} />} aria-label="Hapus pencarian" onClick={() => setQuery("")} /> : undefined}
+              placeholder="Nama, kode, nomor seri, atau lokasi"
+              value={query}
+              onChange={(_, data) => setQuery(data.value)}
+            />
+          </div>
+          <label className="filter-field">
+            <span>Kategori</span>
+            <Select value={category} onChange={(_, data) => setCategory(data.value)}><option value="Semua">Semua kategori</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select>
+          </label>
+          <label className="filter-field">
+            <span>Status</span>
+            <Select value={status} onChange={(_, data) => setStatus(data.value)}><option value="Semua">Semua status</option><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select>
+          </label>
+        </section>
 
         {filteredRows.length ? (
           <div className="table-wrap">

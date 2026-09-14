@@ -7,6 +7,7 @@ Dokumen ini mencatat implementasi frontend modul Peralatan berdasarkan PRD. Kare
 - Daftar peralatan dalam tabel responsif.
 - Pencarian berdasarkan nama, kode inventaris, nomor seri, dan lokasi.
 - Filter kategori dan status yang dapat digabungkan dengan pencarian.
+- Label pencarian dan filter selalu terlihat. Tombol hapus hanya muncul ketika pencarian berisi teks.
 - Form tambah peralatan dengan validasi bawaan browser.
 - Validasi kode inventaris unik pada data sesi aktif.
 - Detail identitas, kondisi, jadwal inspeksi, catatan, dan contoh riwayat terbaru.
