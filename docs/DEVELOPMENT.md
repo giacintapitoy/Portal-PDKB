@@ -22,7 +22,9 @@ Portal ditujukan untuk penggunaan operasional internal. Antarmuka menggunakan Fl
 
 ```text
 src/
-  App.tsx       shell, navigasi, dan tampilan fitur awal
+  App.tsx       shell, navigasi, dashboard, dan tampilan fitur awal
+  features/
+    equipment/  halaman, tipe data, filter, dan data contoh Peralatan
   main.tsx      entry point dan Fluent UI provider
   styles.css    token visual dan layout responsif
 ```
@@ -35,7 +37,7 @@ Komponen baru dipisahkan dari `App.tsx` ketika fitur sudah memiliki alur dan dat
 |---|---|
 | Shell dan navigasi | Tersedia |
 | Dashboard ringkasan | UI dengan data contoh |
-| Daftar dan filter peralatan | UI dengan data contoh |
+| Daftar, filter, tambah, dan detail peralatan | UI interaktif dengan data sesi |
 | Daftar sertifikasi | UI dengan data contoh |
 | Reminder masa berlaku | UI dengan data contoh |
 | Pemakaian peralatan | Menunggu validasi alur |
@@ -45,11 +47,13 @@ Komponen baru dipisahkan dari `App.tsx` ketika fitur sudah memiliki alur dan dat
 
 ## Urutan Pengerjaan yang Disarankan
 
-1. Validasi status peralatan, format nomor inventaris, dan alur pemakaian.
+1. Validasi status peralatan, format nomor inventaris, dan form modul Peralatan yang sudah dibuat.
 2. Tentukan backend, database, dan lingkungan deployment bersama tim.
 3. Bangun autentikasi dan matriks hak akses.
-4. Bangun vertical slice peralatan dari database sampai antarmuka.
+4. Sambungkan modul Peralatan ke API, lalu tambahkan ubah, nonaktifkan, dan riwayat nyata.
 5. Lanjutkan sertifikasi, reminder, pemakaian, laporan, dan audit log.
+
+Dokumentasi cakupan, field, validasi, dan batasan modul tersedia di [Modul Peralatan](features/EQUIPMENT.md).
 
 ## Pemeriksaan
 

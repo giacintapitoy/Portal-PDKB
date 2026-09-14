@@ -38,7 +38,9 @@ Belum ditentukan dan belum termasuk dalam tahap pengerjaan saat ini.
 
 ```text
 src/
-  App.tsx       halaman, state UI, dan data contoh
+  App.tsx       shell, navigasi, dashboard, dan halaman awal
+  features/
+    equipment/  fitur Peralatan dan data contoh
   main.tsx      entry point, font, dan konfigurasi Fluent UI
   styles.css    design tokens, komponen visual, dan responsive layout
 public/
@@ -60,7 +62,7 @@ Build produksi:
 npm run build
 ```
 
-Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Lihat [dokumentasi teknis](docs/DEVELOPMENT.md) dan [roadmap branch](docs/BRANCH-ROADMAP.md).
+Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Lihat [dokumentasi teknis](docs/DEVELOPMENT.md), [modul Peralatan](docs/features/EQUIPMENT.md), dan [roadmap branch](docs/BRANCH-ROADMAP.md).
 
 ## Tahapan
 

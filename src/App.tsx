@@ -1,9 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Badge,
   Button,
   Card,
-  Input,
   Menu,
   MenuItem,
   MenuList,
@@ -11,7 +10,6 @@ import {
   MenuTrigger,
   MessageBar,
   MessageBarBody,
-  Select,
   Spinner,
   Tab,
   TabList,
@@ -29,42 +27,15 @@ import {
   Menu as MenuIcon,
   PackageCheck,
   PanelLeftClose,
-  Search,
   Settings,
   ShieldCheck,
   UsersRound,
   Wrench,
 } from "lucide-react";
+import EquipmentPage from "./features/equipment/EquipmentPage";
+import { formatDate, initialEquipment as equipment, type Equipment, type EquipmentStatus } from "./features/equipment/data";
 
 type Page = "dashboard" | "peralatan" | "pemakaian" | "sertifikasi" | "laporan";
-type EquipmentStatus = "Tersedia" | "Digunakan" | "Inspeksi";
-
-type Equipment = {
-  code: string;
-  name: string;
-  category: string;
-  location: string;
-  status: EquipmentStatus;
-  due: string;
-};
-
-const equipment: Equipment[] = [
-  { code: "PDKB-ISO-014", name: "Hot Stick 6 Section", category: "Isolasi", location: "Gudang A", status: "Tersedia", due: "18 Okt 2026" },
-  { code: "PDKB-K3-022", name: "Full Body Harness", category: "K3", location: "Tim Jaringan", status: "Digunakan", due: "27 Sep 2026" },
-  { code: "PDKB-MTL-008", name: "Hydraulic Crimping Tool", category: "Metal", location: "Ruang Inspeksi", status: "Inspeksi", due: "21 Sep 2026" },
-  { code: "PDKB-PND-031", name: "Insulation Tester", category: "Pendukung", location: "Gudang B", status: "Tersedia", due: "12 Des 2026" },
-];
-
-function matchesEquipment(item: Equipment, query: string, category: string) {
-  const text = `${item.name} ${item.code} ${item.location}`.toLowerCase();
-  return text.includes(query.toLowerCase()) && (category === "Semua" || item.category === category);
-}
-
-if (import.meta.env.DEV) {
-  console.assert(matchesEquipment(equipment[0], "hot stick", "Isolasi"), "Pencarian peralatan harus cocok tanpa membedakan huruf");
-  console.assert(!matchesEquipment(equipment[0], "hot stick", "K3"), "Filter kategori harus membatasi hasil");
-}
-
 const certifications = [
   { name: "Rian Tumbel", team: "PDKB GI", certification: "Pelaksana PDKB TM", due: "24 Sep 2026", days: 10 },
   { name: "Mario Rondonuwu", team: "PDKB Jaringan", certification: "K3 Kelistrikan", due: "9 Okt 2026", days: 25 },
@@ -127,7 +98,7 @@ function EquipmentTable({ rows }: { rows: Equipment[] }) {
               <td>{item.category}</td>
               <td>{item.location}</td>
               <td><StatusBadge status={item.status} /></td>
-              <td>{item.due}</td>
+              <td>{formatDate(item.nextInspection)}</td>
             </tr>
           ))}
         </tbody>
@@ -188,16 +159,9 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
 
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Semua");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem("pdkb-sidebar") === "collapsed");
   const [loading, setLoading] = useState(false);
-
-  const filteredEquipment = useMemo(
-    () => equipment.filter((item) => matchesEquipment(item, query, category)),
-    [category, query],
-  );
 
   const navigate = (nextPage: Page) => {
     setLoading(true);
@@ -260,7 +224,6 @@ export default function App() {
         <div className="content">
           <div className="page-heading">
             <div><h1>{currentPage.title}</h1><p>{currentPage.description}</p></div>
-            {page === "peralatan" && <Button appearance="primary" icon={<Boxes size={16} strokeWidth={1.75} />}>Tambah peralatan</Button>}
             {page === "sertifikasi" && <Button appearance="primary" icon={<UsersRound size={16} strokeWidth={1.75} />}>Tambah sertifikasi</Button>}
             {page === "laporan" && <Button appearance="primary" icon={<Download size={16} strokeWidth={1.75} />}>Ekspor laporan</Button>}
           </div>
@@ -268,17 +231,7 @@ export default function App() {
           {loading ? <div className="loading-state"><Spinner label="Memuat data" /></div> : (
             <>
               {page === "dashboard" && <Dashboard setPage={navigate} />}
-              {page === "peralatan" && (
-                <section className="panel">
-                  <div className="toolbar">
-                    <Input aria-label="Cari peralatan" contentBefore={<Search size={16} strokeWidth={1.75} />} placeholder="Cari nama, kode, atau lokasi" value={query} onChange={(_, data) => setQuery(data.value)} />
-                    <Select aria-label="Filter kategori" value={category} onChange={(_, data) => setCategory(data.value)}>
-                      <option>Semua</option><option>Isolasi</option><option>K3</option><option>Metal</option><option>Pendukung</option>
-                    </Select>
-                  </div>
-                  <EquipmentTable rows={filteredEquipment} />
-                </section>
-              )}
+              {page === "peralatan" && <EquipmentPage />}
               {page === "sertifikasi" && (
                 <section className="panel">
                   <TabList defaultSelectedValue="jatuh-tempo"><Tab value="jatuh-tempo">Segera berakhir</Tab><Tab value="aktif">Aktif</Tab><Tab value="rencana">Rencana diklat</Tab></TabList>
