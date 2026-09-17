@@ -31,8 +31,9 @@ src/
   styles.css    token visual dan layout responsif
 ```
 
-Backend berada di `backend/`. PostgreSQL dijalankan melalui `compose.yaml` pada
-root repository; Laravel dijalankan di host dan membutuhkan ekstensi `pdo_pgsql`.
+Backend berada di `backend/`. `compose.yaml` menjalankan frontend, Laravel, dan
+PostgreSQL. Jalankan `docker compose up --build` dari root repository; migration
+dan seeder dijalankan otomatis saat container backend dimulai.
 
 Komponen baru dipisahkan dari `App.tsx` ketika fitur sudah memiliki alur dan data nyata. Pemisahan prematur dihindari agar perubahan hasil validasi PRD tetap murah.
 

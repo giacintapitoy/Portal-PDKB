@@ -49,7 +49,23 @@ public/
   pln-logo.png  aset logo PLN
 ```
 
-## Menjalankan Aplikasi
+## Menjalankan Aplikasi dengan Docker
+
+Seluruh stack dapat dijalankan dengan satu perintah:
+
+```bash
+docker compose up --build
+```
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8000/api/v1`
+- PostgreSQL: `localhost:5432`
+
+Setelah image pertama selesai dibuat, jalankan berikutnya cukup dengan
+`docker compose up`. Migration dan seeder Laravel berjalan otomatis ketika
+container backend dimulai. Hentikan stack dengan `docker compose down`.
+
+## Menjalankan Tanpa Docker
 
 ```bash
 npm install
@@ -64,10 +80,9 @@ Build produksi:
 npm run build
 ```
 
-Backend membutuhkan PHP 8.3+, Composer, dan ekstensi `pdo_pgsql`.
+Backend membutuhkan PHP 8.3+, Composer, PostgreSQL, dan ekstensi `pdo_pgsql`.
 
 ```bash
-docker compose up -d postgres
 cp backend/.env.example backend/.env
 cd backend
 composer install
