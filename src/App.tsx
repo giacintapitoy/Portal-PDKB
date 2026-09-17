@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Badge,
   Button,
@@ -10,7 +10,6 @@ import {
   MenuTrigger,
   MessageBar,
   MessageBarBody,
-  Spinner,
   Tab,
   TabList,
   Tooltip,
@@ -33,7 +32,8 @@ import {
   Wrench,
 } from "lucide-react";
 import EquipmentPage from "./features/equipment/EquipmentPage";
-import { formatDate, initialEquipment as equipment, type Equipment, type EquipmentStatus } from "./features/equipment/data";
+import { fetchEquipment } from "./features/equipment/api";
+import { formatDate, initialEquipment, type Equipment, type EquipmentStatus } from "./features/equipment/data";
 
 type Page = "dashboard" | "peralatan" | "pemakaian" | "sertifikasi" | "laporan";
 const certifications = [
@@ -58,7 +58,8 @@ const pageTitles: Record<Page, { title: string; description: string }> = {
   laporan: { title: "Laporan", description: "Penyusunan laporan terstruktur akan tersedia setelah format PLN divalidasi." },
 };
 
-function StatusBadge({ status }: { status: EquipmentStatus }) {
+function StatusBadge({ active, status }: { active: boolean; status: EquipmentStatus }) {
+  if (!active) return <Badge appearance="tint">Nonaktif</Badge>;
   const appearance = status === "Tersedia" ? "filled" : "tint";
   const color = status === "Tersedia" ? "success" : status === "Inspeksi" ? "warning" : "informative";
   return <Badge appearance={appearance} color={color}>{status}</Badge>;
@@ -97,7 +98,7 @@ function EquipmentTable({ rows }: { rows: Equipment[] }) {
               <td><strong>{item.name}</strong><span>{item.code}</span></td>
               <td>{item.category}</td>
               <td>{item.location}</td>
-              <td><StatusBadge status={item.status} /></td>
+              <td><StatusBadge active={item.active} status={item.status} /></td>
               <td>{formatDate(item.nextInspection)}</td>
             </tr>
           ))}
@@ -107,7 +108,11 @@ function EquipmentTable({ rows }: { rows: Equipment[] }) {
   );
 }
 
-function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
+function Dashboard({ equipment, setPage }: { equipment: Equipment[]; setPage: (page: Page) => void }) {
+  const activeEquipment = equipment.filter((item) => item.active);
+  const usedEquipment = activeEquipment.filter((item) => item.status === "Digunakan").length;
+  const inspectionEquipment = activeEquipment.filter((item) => item.condition === "Perlu pemeriksaan").length;
+
   return (
     <>
       <MessageBar intent="warning" className="attention-bar">
@@ -127,15 +132,15 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
           <section className="metric-grid" aria-label="Ringkasan data">
             <Card className="metric">
               <span className="metric-icon cyan"><PackageCheck size={18} strokeWidth={1.75} /></span>
-              <span className="metric-copy"><small>Total peralatan</small><strong>184</strong></span>
+              <span className="metric-copy"><small>Total peralatan aktif</small><strong>{activeEquipment.length}</strong></span>
             </Card>
             <Card className="metric">
               <span className="metric-icon purple"><ClipboardList size={18} strokeWidth={1.75} /></span>
-              <span className="metric-copy"><small>Sedang digunakan</small><strong>12</strong></span>
+              <span className="metric-copy"><small>Sedang digunakan</small><strong>{usedEquipment}</strong></span>
             </Card>
             <Card className="metric">
               <span className="metric-icon yellow"><Wrench size={18} strokeWidth={1.75} /></span>
-              <span className="metric-copy"><small>Perlu inspeksi</small><strong>7</strong></span>
+              <span className="metric-copy"><small>Perlu inspeksi</small><strong>{inspectionEquipment}</strong></span>
             </Card>
             <Card className="metric">
               <span className="metric-icon green"><ShieldCheck size={18} strokeWidth={1.75} /></span>
@@ -159,18 +164,30 @@ function Dashboard({ setPage }: { setPage: (page: Page) => void }) {
 
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
+  const [equipment, setEquipment] = useState(initialEquipment);
+  const [equipmentApiError, setEquipmentApiError] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem("pdkb-sidebar") === "collapsed");
-  const [loading, setLoading] = useState(false);
 
   const navigate = (nextPage: Page) => {
-    setLoading(true);
     setPage(nextPage);
     setMobileNavOpen(false);
-    window.setTimeout(() => setLoading(false), 220);
   };
 
   const currentPage = pageTitles[page];
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchEquipment(controller.signal)
+      .then(setEquipment)
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setEquipmentApiError("API belum dapat dihubungi. Data contoh tetap digunakan.");
+      });
+
+    return () => controller.abort();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((collapsed) => {
@@ -222,16 +239,16 @@ export default function App() {
         </header>
 
         <div className="content">
+          {equipmentApiError && <MessageBar intent="warning"><MessageBarBody>{equipmentApiError}</MessageBarBody></MessageBar>}
           <div className="page-heading">
             <div><h1>{currentPage.title}</h1><p>{currentPage.description}</p></div>
             {page === "sertifikasi" && <Button appearance="primary" icon={<UsersRound size={16} strokeWidth={1.75} />}>Tambah sertifikasi</Button>}
             {page === "laporan" && <Button appearance="primary" icon={<Download size={16} strokeWidth={1.75} />}>Ekspor laporan</Button>}
           </div>
 
-          {loading ? <div className="loading-state"><Spinner label="Memuat data" /></div> : (
-            <>
-              {page === "dashboard" && <Dashboard setPage={navigate} />}
-              {page === "peralatan" && <EquipmentPage />}
+          <>
+              {page === "dashboard" && <Dashboard equipment={equipment} setPage={navigate} />}
+              {page === "peralatan" && <EquipmentPage rows={equipment} setRows={setEquipment} />}
               {page === "sertifikasi" && (
                 <section className="panel">
                   <TabList defaultSelectedValue="jatuh-tempo"><Tab value="jatuh-tempo">Segera berakhir</Tab><Tab value="aktif">Aktif</Tab><Tab value="rencana">Rencana diklat</Tab></TabList>
@@ -242,8 +259,7 @@ export default function App() {
               )}
               {page === "pemakaian" && <EmptyFeature title="Modul pemakaian belum dibangun" description="Alur pencatatan perlu divalidasi dengan petugas PDKB sebelum implementasi." />}
               {page === "laporan" && <EmptyFeature title="Format laporan belum tersedia" description="Tambahkan contoh laporan resmi PLN agar struktur ekspor dapat dibuat dengan tepat." />}
-            </>
-          )}
+          </>
         </div>
       </main>
       {mobileNavOpen && <button className="backdrop" aria-label="Tutup navigasi" onClick={() => setMobileNavOpen(false)} />}

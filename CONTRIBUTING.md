@@ -1,6 +1,6 @@
 # Panduan Kontribusi
 
-Panduan ini digunakan oleh empat anggota tim Portal PDKB selama development.
+Panduan ini digunakan oleh tim Portal PDKB selama development.
 
 ## Alur Kerja
 
