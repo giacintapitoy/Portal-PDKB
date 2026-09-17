@@ -66,3 +66,5 @@ npm run build
 ```
 
 Perubahan tampilan diperiksa minimal pada lebar desktop 1440 px dan mobile 390 px. PR perubahan visual menyertakan screenshot.
+
+Jenis pengujian, tool, dan cakupannya tersedia di [Strategi Pengujian](TESTING.md).
