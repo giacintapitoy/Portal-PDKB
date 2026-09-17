@@ -1,4 +1,4 @@
-import { type FormEvent, useMemo, useState } from "react";
+import { type Dispatch, type FormEvent, type SetStateAction, useMemo, useState } from "react";
 import {
   Badge,
   Button,
@@ -15,21 +15,26 @@ import {
   Select,
   Textarea,
 } from "@fluentui/react-components";
-import { Eye, Plus, Search, X } from "lucide-react";
-import { filterEquipment, formatDate, initialEquipment, type Equipment, type EquipmentStatus } from "./data";
+import { Eye, Pencil, Plus, Search, X } from "lucide-react";
+import { filterEquipment, formatDate, type Equipment, type EquipmentStatus } from "./data";
 
-function StatusBadge({ status }: { status: EquipmentStatus }) {
+function StatusBadge({ active, status }: { active: boolean; status: EquipmentStatus }) {
+  if (!active) return <Badge appearance="tint">Nonaktif</Badge>;
   const appearance = status === "Tersedia" ? "filled" : "tint";
   const color = status === "Tersedia" ? "success" : status === "Inspeksi" ? "warning" : "informative";
   return <Badge appearance={appearance} color={color}>{status}</Badge>;
 }
 
-export default function EquipmentPage() {
-  const [rows, setRows] = useState(initialEquipment);
+type EquipmentPageProps = {
+  rows: Equipment[];
+  setRows: Dispatch<SetStateAction<Equipment[]>>;
+};
+
+export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Semua");
   const [status, setStatus] = useState("Semua");
-  const [addOpen, setAddOpen] = useState(false);
+  const [formItem, setFormItem] = useState<Equipment | null>();
   const [selected, setSelected] = useState<Equipment | null>(null);
   const [formError, setFormError] = useState("");
   const [notice, setNotice] = useState("");
@@ -39,17 +44,18 @@ export default function EquipmentPage() {
     [rows, query, category, status],
   );
 
-  const addEquipment = (event: FormEvent<HTMLFormElement>) => {
+  const saveEquipment = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const code = String(form.get("code") ?? "").trim();
 
-    if (rows.some((item) => item.code.toLocaleLowerCase("id-ID") === code.toLocaleLowerCase("id-ID"))) {
+    if (!formItem && rows.some((item) => item.code.toLocaleLowerCase("id-ID") === code.toLocaleLowerCase("id-ID"))) {
       setFormError("Kode inventaris sudah digunakan. Masukkan kode yang berbeda.");
       return;
     }
 
     const item: Equipment = {
+      active: formItem?.active ?? true,
       code,
       name: String(form.get("name")),
       category: String(form.get("category")),
@@ -63,10 +69,10 @@ export default function EquipmentPage() {
       notes: String(form.get("notes")) || undefined,
     };
 
-    setRows((current) => [item, ...current]);
-    setNotice(`${item.name} berhasil ditambahkan sebagai data contoh.`);
+    setRows((current) => formItem ? current.map((row) => row.code === formItem.code ? item : row) : [item, ...current]);
+    setNotice(`${item.name} berhasil ${formItem ? "diperbarui" : "ditambahkan"} sebagai data contoh.`);
     setFormError("");
-    setAddOpen(false);
+    setFormItem(undefined);
     event.currentTarget.reset();
   };
 
@@ -80,7 +86,7 @@ export default function EquipmentPage() {
             <h2 id="equipment-list-title">Daftar peralatan</h2>
             <p>{filteredRows.length} dari {rows.length} peralatan ditampilkan</p>
           </div>
-          <Button appearance="primary" icon={<Plus size={16} strokeWidth={1.75} />} onClick={() => setAddOpen(true)}>Tambah peralatan</Button>
+          <Button appearance="primary" icon={<Plus size={16} strokeWidth={1.75} />} onClick={() => setFormItem(null)}>Tambah peralatan</Button>
         </div>
 
         <section className="equipment-filters" aria-labelledby="equipment-filter-title">
@@ -102,7 +108,7 @@ export default function EquipmentPage() {
           </label>
           <label className="filter-field">
             <span>Status</span>
-            <Select value={status} onChange={(_, data) => setStatus(data.value)}><option value="Semua">Semua status</option><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select>
+            <Select value={status} onChange={(_, data) => setStatus(data.value)}><option value="Semua">Semua status</option><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option><option>Nonaktif</option></Select>
           </label>
         </section>
 
@@ -113,7 +119,7 @@ export default function EquipmentPage() {
               <tbody>{filteredRows.map((item) => (
                 <tr key={item.code}>
                   <td><strong>{item.name}</strong><span>{item.code}</span></td>
-                  <td>{item.serialNumber}</td><td>{item.category}</td><td>{item.location}</td><td><StatusBadge status={item.status} /></td><td>{formatDate(item.nextInspection)}</td>
+                  <td>{item.serialNumber}</td><td>{item.category}</td><td>{item.location}</td><td><StatusBadge active={item.active} status={item.status} /></td><td>{formatDate(item.nextInspection)}</td>
                   <td><Button appearance="subtle" icon={<Eye size={15} strokeWidth={1.75} />} aria-label={`Lihat ${item.name}`} onClick={() => setSelected(item)}><span className="action-label">Lihat</span></Button></td>
                 </tr>
               ))}</tbody>
@@ -124,29 +130,29 @@ export default function EquipmentPage() {
         )}
       </section>
 
-      <Dialog open={addOpen} onOpenChange={(_, data) => { setAddOpen(data.open); setFormError(""); }}>
+      <Dialog open={formItem !== undefined} onOpenChange={(_, data) => { if (!data.open) setFormItem(undefined); setFormError(""); }}>
         <DialogSurface className="equipment-dialog">
-          <form onSubmit={addEquipment}>
+          <form key={formItem?.code ?? "new"} onSubmit={saveEquipment}>
             <DialogBody>
-              <DialogTitle>Tambah peralatan</DialogTitle>
+              <DialogTitle>{formItem ? "Ubah peralatan" : "Tambah peralatan"}</DialogTitle>
               <DialogContent>
                 <p className="dialog-description">Lengkapi identitas dan status awal peralatan. Data tersimpan sementara pada sesi ini.</p>
                 {formError && <MessageBar intent="error"><MessageBarBody>{formError}</MessageBarBody></MessageBar>}
                 <div className="equipment-form">
-                  <Field label="Kode inventaris" required><Input name="code" required placeholder="Contoh: PDKB-ISO-015" /></Field>
-                  <Field label="Nama peralatan" required><Input name="name" required /></Field>
-                  <Field label="Nomor seri" required><Input name="serialNumber" required /></Field>
-                  <Field label="Kategori" required><Select name="category" required><option value="">Pilih kategori</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select></Field>
-                  <Field label="Asal-usul" required><Input name="origin" required /></Field>
-                  <Field label="Tanggal perolehan"><Input name="acquiredAt" type="date" /></Field>
-                  <Field label="Kondisi" required><Select name="condition" required><option>Baik</option><option>Perlu pemeriksaan</option><option>Rusak</option></Select></Field>
-                  <Field label="Status" required><Select name="status" required><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select></Field>
-                  <Field label="Lokasi" required><Input name="location" required /></Field>
-                  <Field label="Inspeksi berikutnya" required><Input name="nextInspection" type="date" required /></Field>
-                  <Field className="form-wide" label="Catatan"><Textarea name="notes" resize="vertical" /></Field>
+                  <Field label="Kode inventaris" required><Input name="code" required readOnly={Boolean(formItem)} defaultValue={formItem?.code} placeholder="Contoh: PDKB-ISO-015" /></Field>
+                  <Field label="Nama peralatan" required><Input name="name" required defaultValue={formItem?.name} /></Field>
+                  <Field label="Nomor seri" required><Input name="serialNumber" required defaultValue={formItem?.serialNumber} /></Field>
+                  <Field label="Kategori" required><Select name="category" required defaultValue={formItem?.category ?? ""}><option value="">Pilih kategori</option><option>Isolasi</option><option>Metal</option><option>K3</option><option>Pendukung</option><option>Inovasi</option></Select></Field>
+                  <Field label="Asal-usul" required><Input name="origin" required defaultValue={formItem?.origin} /></Field>
+                  <Field label="Tanggal perolehan"><Input name="acquiredAt" type="date" defaultValue={formItem?.acquiredAt} /></Field>
+                  <Field label="Kondisi" required><Select name="condition" required defaultValue={formItem?.condition ?? "Baik"}><option>Baik</option><option>Perlu pemeriksaan</option><option>Rusak</option></Select></Field>
+                  <Field label="Status" required><Select name="status" required defaultValue={formItem?.status ?? "Tersedia"}><option>Tersedia</option><option>Digunakan</option><option>Inspeksi</option></Select></Field>
+                  <Field label="Lokasi" required><Input name="location" required defaultValue={formItem?.location} /></Field>
+                  <Field label="Inspeksi berikutnya" required><Input name="nextInspection" type="date" required defaultValue={formItem?.nextInspection} /></Field>
+                  <Field className="form-wide" label="Catatan"><Textarea name="notes" resize="vertical" defaultValue={formItem?.notes} /></Field>
                 </div>
               </DialogContent>
-              <DialogActions><Button appearance="secondary" type="button" onClick={() => setAddOpen(false)}>Batal</Button><Button appearance="primary" type="submit">Simpan peralatan</Button></DialogActions>
+              <DialogActions><Button appearance="secondary" type="button" onClick={() => setFormItem(undefined)}>Batal</Button><Button appearance="primary" type="submit">Simpan peralatan</Button></DialogActions>
             </DialogBody>
           </form>
         </DialogSurface>
@@ -155,7 +161,7 @@ export default function EquipmentPage() {
       <Dialog open={Boolean(selected)} onOpenChange={(_, data) => !data.open && setSelected(null)}>
         <DialogSurface className="equipment-dialog detail-dialog">
           {selected && <DialogBody><DialogTitle>{selected.name}</DialogTitle><DialogContent>
-            <div className="detail-status"><StatusBadge status={selected.status} /><span>{selected.code}</span></div>
+            <div className="detail-status"><StatusBadge active={selected.active} status={selected.status} /><span>{selected.code}</span></div>
             <dl className="equipment-details">
               <div><dt>Nomor seri</dt><dd>{selected.serialNumber}</dd></div><div><dt>Kategori</dt><dd>{selected.category}</dd></div>
               <div><dt>Kondisi</dt><dd>{selected.condition}</dd></div><div><dt>Lokasi</dt><dd>{selected.location}</dd></div>
@@ -163,7 +169,17 @@ export default function EquipmentPage() {
               <div><dt>Inspeksi berikutnya</dt><dd>{formatDate(selected.nextInspection)}</dd></div><div><dt>Catatan</dt><dd>{selected.notes || "Tidak ada catatan"}</dd></div>
             </dl>
             <section className="history-preview"><h3>Riwayat terbaru</h3><div><span>14 Sep 2026</span><p>Status diperiksa oleh Admin PDKB.</p></div><div><span>8 Sep 2026</span><p>Lokasi diperbarui menjadi {selected.location}.</p></div></section>
-          </DialogContent><DialogActions><Button appearance="primary" onClick={() => setSelected(null)}>Tutup</Button></DialogActions></DialogBody>}
+          </DialogContent><DialogActions>
+            <Button appearance="secondary" icon={<Pencil size={15} />} onClick={() => { setFormItem(selected); setSelected(null); }}>Ubah</Button>
+            <Button appearance="secondary" onClick={() => {
+              const active = !selected.active;
+              if (!active && !window.confirm(`Nonaktifkan ${selected.name}?`)) return;
+              setRows((current) => current.map((item) => item.code === selected.code ? { ...item, active } : item));
+              setNotice(`${selected.name} berhasil ${active ? "diaktifkan kembali" : "dinonaktifkan"}.`);
+              setSelected(null);
+            }}>{selected.active ? "Nonaktifkan" : "Aktifkan kembali"}</Button>
+            <Button appearance="primary" onClick={() => setSelected(null)}>Tutup</Button>
+          </DialogActions></DialogBody>}
         </DialogSurface>
       </Dialog>
     </>

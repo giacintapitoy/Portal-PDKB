@@ -2,7 +2,7 @@
 
 ## Status
 
-Branch pertama membangun fondasi frontend untuk memvalidasi struktur informasi PRD. Seluruh angka dan nama pada aplikasi masih berupa data contoh. Belum ada koneksi database, autentikasi nyata, atau API.
+Frontend mengambil daftar peralatan dari REST API Laravel dan mempertahankan data contoh sebagai fallback ketika API belum berjalan. Operasi tambah, ubah, dan nonaktifkan masih menggunakan state lokal; autentikasi nyata belum dibuat.
 
 ## Arah Desain
 
@@ -31,6 +31,10 @@ src/
   styles.css    token visual dan layout responsif
 ```
 
+Backend berada di `backend/`. `compose.yaml` menjalankan frontend, Laravel, dan
+PostgreSQL. Jalankan `docker compose up --build` dari root repository; migration
+dan seeder dijalankan otomatis saat container backend dimulai.
+
 Komponen baru dipisahkan dari `App.tsx` ketika fitur sudah memiliki alur dan data nyata. Pemisahan prematur dihindari agar perubahan hasil validasi PRD tetap murah.
 
 ## Cakupan Implementasi Awal
@@ -39,20 +43,21 @@ Komponen baru dipisahkan dari `App.tsx` ketika fitur sudah memiliki alur dan dat
 |---|---|
 | Shell dan navigasi | Tersedia |
 | Dashboard ringkasan | UI dengan data contoh |
-| Daftar, filter, tambah, dan detail peralatan | UI interaktif dengan data sesi |
+| Daftar, filter, tambah, ubah, nonaktifkan, dan detail peralatan | UI interaktif dengan data sesi |
 | Daftar sertifikasi | UI dengan data contoh |
 | Reminder masa berlaku | UI dengan data contoh |
 | Pemakaian peralatan | Menunggu validasi alur |
 | Laporan | Menunggu contoh format PLN |
 | Autentikasi dan hak akses | Belum dimulai |
-| API, database, dan audit log | Belum dimulai |
+| API dan database | Fondasi Laravel/PostgreSQL; endpoint daftar peralatan tersedia |
+| Audit log | Belum dimulai |
 
 ## Urutan Pengerjaan yang Disarankan
 
 1. Validasi status peralatan, format nomor inventaris, dan form modul Peralatan yang sudah dibuat.
-2. Tentukan backend, database, dan lingkungan deployment bersama tim.
+2. Lengkapi endpoint tambah, ubah, dan nonaktifkan peralatan.
 3. Bangun autentikasi dan matriks hak akses.
-4. Sambungkan modul Peralatan ke API, lalu tambahkan ubah, nonaktifkan, dan riwayat nyata.
+4. Sambungkan modul Peralatan ke API dan tambahkan riwayat nyata.
 5. Lanjutkan sertifikasi, reminder, pemakaian, laporan, dan audit log.
 
 Dokumentasi cakupan, field, validasi, dan batasan modul tersedia di [Modul Peralatan](features/EQUIPMENT.md).
