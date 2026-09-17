@@ -62,7 +62,7 @@ Build produksi:
 npm run build
 ```
 
-Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Lihat [dokumentasi teknis](docs/DEVELOPMENT.md), [modul Peralatan](docs/features/EQUIPMENT.md), dan [roadmap branch](docs/BRANCH-ROADMAP.md).
+Implementasi saat ini menggunakan data contoh untuk validasi antarmuka. Lihat [dokumentasi teknis](docs/DEVELOPMENT.md), [modul Peralatan](docs/features/EQUIPMENT.md), [strategi pengujian](docs/TESTING.md), dan [roadmap branch](docs/BRANCH-ROADMAP.md).
 
 ## Tahapan
 
