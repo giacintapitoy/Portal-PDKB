@@ -20,6 +20,7 @@ import {
   CalendarClock,
   ChevronDown,
   ClipboardList,
+  ContactRound,
   Download,
   FileChartColumn,
   LayoutDashboard,
@@ -54,7 +55,7 @@ const navItems = [
   { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
   { id: "peralatan" as const, label: "Peralatan", icon: Boxes },
   { id: "pemakaian" as const, label: "Pemakaian", icon: ClipboardList },
-  { id: "sumber-daya-manusia" as const, label: "SDM PDKB", icon: UserRound },
+  { id: "sumber-daya-manusia" as const, label: "Anggota", icon: ContactRound },
   { id: "sertifikasi" as const, label: "Sertifikasi", icon: UsersRound },
   { id: "laporan" as const, label: "Laporan", icon: FileChartColumn },
 ];
