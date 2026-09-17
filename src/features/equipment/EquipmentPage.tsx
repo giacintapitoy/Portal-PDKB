@@ -16,6 +16,7 @@ import {
   Textarea,
 } from "@fluentui/react-components";
 import { Eye, Pencil, Plus, Search, X } from "lucide-react";
+import { saveEquipment as persistEquipment } from "./api";
 import { filterEquipment, formatDate, type Equipment, type EquipmentStatus } from "./data";
 
 function StatusBadge({ active, status }: { active: boolean; status: EquipmentStatus }) {
@@ -38,13 +39,15 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
   const [selected, setSelected] = useState<Equipment | null>(null);
   const [formError, setFormError] = useState("");
   const [notice, setNotice] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const filteredRows = useMemo(
     () => filterEquipment(rows, query, category, status),
     [rows, query, category, status],
   );
 
-  const saveEquipment = (event: FormEvent<HTMLFormElement>) => {
+  const saveEquipment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const code = String(form.get("code") ?? "").trim();
@@ -55,6 +58,7 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
     }
 
     const item: Equipment = {
+      id: formItem?.id,
       active: formItem?.active ?? true,
       code,
       name: String(form.get("name")),
@@ -69,16 +73,26 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
       notes: String(form.get("notes")) || undefined,
     };
 
-    setRows((current) => formItem ? current.map((row) => row.code === formItem.code ? item : row) : [item, ...current]);
-    setNotice(`${item.name} berhasil ${formItem ? "diperbarui" : "ditambahkan"} sebagai data contoh.`);
-    setFormError("");
-    setFormItem(undefined);
-    event.currentTarget.reset();
+    setSaving(true);
+    try {
+      const saved = await persistEquipment(item);
+      setRows((current) => formItem ? current.map((row) => row.id === saved.id ? saved : row) : [saved, ...current]);
+      setNotice(`${saved.name} berhasil ${formItem ? "diperbarui" : "ditambahkan"}.`);
+      setActionError("");
+      setFormError("");
+      setFormItem(undefined);
+      event.currentTarget.reset();
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Peralatan gagal disimpan.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <>
       {notice && <MessageBar intent="success" className="equipment-notice"><MessageBarBody>{notice}</MessageBarBody></MessageBar>}
+      {actionError && <MessageBar intent="error" className="equipment-notice"><MessageBarBody>{actionError}</MessageBarBody></MessageBar>}
 
       <section className="panel equipment-management" aria-labelledby="equipment-list-title">
         <div className="feature-toolbar">
@@ -136,7 +150,7 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
             <DialogBody>
               <DialogTitle>{formItem ? "Ubah peralatan" : "Tambah peralatan"}</DialogTitle>
               <DialogContent>
-                <p className="dialog-description">Lengkapi identitas dan status awal peralatan. Data tersimpan sementara pada sesi ini.</p>
+                <p className="dialog-description">Lengkapi identitas dan status awal peralatan.</p>
                 {formError && <MessageBar intent="error"><MessageBarBody>{formError}</MessageBarBody></MessageBar>}
                 <div className="equipment-form">
                   <Field label="Kode inventaris" required><Input name="code" required readOnly={Boolean(formItem)} defaultValue={formItem?.code} placeholder="Contoh: PDKB-ISO-015" /></Field>
@@ -152,7 +166,7 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
                   <Field className="form-wide" label="Catatan"><Textarea name="notes" resize="vertical" defaultValue={formItem?.notes} /></Field>
                 </div>
               </DialogContent>
-              <DialogActions><Button appearance="secondary" type="button" onClick={() => setFormItem(undefined)}>Batal</Button><Button appearance="primary" type="submit">Simpan peralatan</Button></DialogActions>
+              <DialogActions><Button appearance="secondary" type="button" disabled={saving} onClick={() => setFormItem(undefined)}>Batal</Button><Button appearance="primary" type="submit" disabled={saving}>{saving ? "Menyimpan..." : "Simpan peralatan"}</Button></DialogActions>
             </DialogBody>
           </form>
         </DialogSurface>
@@ -171,12 +185,21 @@ export default function EquipmentPage({ rows, setRows }: EquipmentPageProps) {
             <section className="history-preview"><h3>Riwayat terbaru</h3><div><span>14 Sep 2026</span><p>Status diperiksa oleh Admin PDKB.</p></div><div><span>8 Sep 2026</span><p>Lokasi diperbarui menjadi {selected.location}.</p></div></section>
           </DialogContent><DialogActions>
             <Button appearance="secondary" icon={<Pencil size={15} />} onClick={() => { setFormItem(selected); setSelected(null); }}>Ubah</Button>
-            <Button appearance="secondary" onClick={() => {
+            <Button appearance="secondary" disabled={saving} onClick={async () => {
               const active = !selected.active;
               if (!active && !window.confirm(`Nonaktifkan ${selected.name}?`)) return;
-              setRows((current) => current.map((item) => item.code === selected.code ? { ...item, active } : item));
-              setNotice(`${selected.name} berhasil ${active ? "diaktifkan kembali" : "dinonaktifkan"}.`);
-              setSelected(null);
+              setSaving(true);
+              try {
+                const saved = await persistEquipment({ ...selected, active });
+                setRows((current) => current.map((item) => item.id === saved.id ? saved : item));
+                setNotice(`${saved.name} berhasil ${active ? "diaktifkan kembali" : "dinonaktifkan"}.`);
+                setActionError("");
+                setSelected(null);
+              } catch (error) {
+                setActionError(error instanceof Error ? error.message : "Status peralatan gagal diperbarui.");
+              } finally {
+                setSaving(false);
+              }
             }}>{selected.active ? "Nonaktifkan" : "Aktifkan kembali"}</Button>
             <Button appearance="primary" onClick={() => setSelected(null)}>Tutup</Button>
           </DialogActions></DialogBody>}

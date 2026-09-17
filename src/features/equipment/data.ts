@@ -2,6 +2,7 @@ export type EquipmentStatus = "Tersedia" | "Digunakan" | "Inspeksi";
 export type EquipmentCondition = "Baik" | "Perlu pemeriksaan" | "Rusak";
 
 export type Equipment = {
+  id?: number;
   active: boolean;
   code: string;
   name: string;

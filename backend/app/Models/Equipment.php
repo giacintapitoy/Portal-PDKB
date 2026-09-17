@@ -13,7 +13,18 @@ class Equipment extends Model
 
     protected $table = 'equipment';
 
-    protected $guarded = ['id'];
+    protected $attributes = [
+        'quantity_total' => 1,
+        'quantity_in_use' => 0,
+        'quantity_damaged' => 0,
+        'quantity_repair' => 0,
+    ];
+
+    protected $fillable = [
+        'inventory_code', 'tracking_mode', 'name', 'division_id', 'category_id',
+        'serial_number', 'brand', 'model', 'size', 'origin', 'acquired_at', 'unit',
+        'location', 'condition', 'availability_status', 'next_inspection_at', 'active', 'notes',
+    ];
 
     protected function casts(): array
     {
