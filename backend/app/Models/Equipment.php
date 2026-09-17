@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Equipment extends Model
@@ -43,6 +44,16 @@ class Equipment extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(EquipmentCategory::class, 'category_id');
+    }
+
+    public function inspections(): HasMany
+    {
+        return $this->hasMany(EquipmentInspection::class);
+    }
+
+    public function loanItems(): HasMany
+    {
+        return $this->hasMany(LoanItem::class);
     }
 
     public function availableQuantity(): int
