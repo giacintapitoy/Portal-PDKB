@@ -28,6 +28,7 @@ import {
   PanelLeftClose,
   Settings,
   ShieldCheck,
+  UserRound,
   UsersRound,
   Wrench,
 } from "lucide-react";
@@ -35,17 +36,25 @@ import EquipmentPage from "./features/equipment/EquipmentPage";
 import { fetchEquipment } from "./features/equipment/api";
 import { formatDate, initialEquipment, type Equipment, type EquipmentStatus } from "./features/equipment/data";
 
-type Page = "dashboard" | "peralatan" | "pemakaian" | "sertifikasi" | "laporan";
+type Page = "dashboard" | "peralatan" | "pemakaian" | "sumber-daya-manusia" | "sertifikasi" | "laporan";
 const certifications = [
   { name: "Rian Tumbel", team: "PDKB GI", certification: "Pelaksana PDKB TM", due: "24 Sep 2026", days: 10 },
   { name: "Mario Rondonuwu", team: "PDKB Jaringan", certification: "K3 Kelistrikan", due: "9 Okt 2026", days: 25 },
   { name: "Yolanda Waworuntu", team: "PDKB GI", certification: "Pengawas Pekerjaan", due: "2 Nov 2026", days: 49 },
 ];
 
+const staffProfiles = [
+  { name: "Admin PDKB", role: "Administrator", team: "Manajemen PDKB", status: "Aktif", initials: "AR" },
+  { name: "Rian Tumbel", role: "Pelaksana PDKB TM", team: "PDKB GI", status: "Aktif", initials: "RT" },
+  { name: "Mario Rondonuwu", role: "Pelaksana PDKB Jaringan", team: "PDKB Jaringan", status: "Aktif", initials: "MR" },
+  { name: "Yolanda Waworuntu", role: "Pengawas Pekerjaan", team: "PDKB GI", status: "Cuti", initials: "YW" },
+];
+
 const navItems = [
   { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
   { id: "peralatan" as const, label: "Peralatan", icon: Boxes },
   { id: "pemakaian" as const, label: "Pemakaian", icon: ClipboardList },
+  { id: "sumber-daya-manusia" as const, label: "SDM PDKB", icon: UserRound },
   { id: "sertifikasi" as const, label: "Sertifikasi", icon: UsersRound },
   { id: "laporan" as const, label: "Laporan", icon: FileChartColumn },
 ];
@@ -54,6 +63,7 @@ const pageTitles: Record<Page, { title: string; description: string }> = {
   dashboard: { title: "Ringkasan operasional", description: "Pantau peralatan, sertifikasi, dan pekerjaan yang perlu ditindaklanjuti. Data saat ini adalah contoh." },
   peralatan: { title: "Data peralatan", description: "Cari dan pantau status seluruh peralatan PDKB." },
   pemakaian: { title: "Riwayat pemakaian", description: "Pencatatan kegiatan dan penggunaan peralatan akan tersedia pada iterasi berikutnya." },
+  "sumber-daya-manusia": { title: "Sumber daya manusia", description: "Kelola profil dan informasi anggota serta staf PDKB UPT Manado." },
   sertifikasi: { title: "Sertifikasi personel", description: "Pantau masa berlaku kompetensi dan rencana sertifikasi." },
   laporan: { title: "Laporan", description: "Penyusunan laporan terstruktur akan tersedia setelah format PLN divalidasi." },
 };
@@ -162,6 +172,27 @@ function Dashboard({ equipment, setPage }: { equipment: Equipment[]; setPage: (p
   );
 }
 
+function HumanResourcesPage() {
+  return (
+    <section className="panel people-management" aria-labelledby="people-list-title">
+      <div className="feature-toolbar">
+        <div><h2 id="people-list-title">Profil anggota dan staf</h2><p>{staffProfiles.length} anggota terdaftar di unit PDKB UPT Manado</p></div>
+        <Button appearance="primary" icon={<UserRound size={16} strokeWidth={1.75} />}>Tambah anggota</Button>
+      </div>
+      <div className="people-grid">
+        {staffProfiles.map((person) => (
+          <article className="person-card" key={person.name}>
+            <div className="person-avatar" aria-hidden="true">{person.initials}</div>
+            <div className="person-copy"><h3>{person.name}</h3><p>{person.role}</p><span>{person.team}</span></div>
+            <Badge color={person.status === "Aktif" ? "success" : "warning"}>{person.status}</Badge>
+            <Button appearance="subtle">Lihat profil</Button>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
   const [equipment, setEquipment] = useState(initialEquipment);
@@ -249,6 +280,7 @@ export default function App() {
           <>
               {page === "dashboard" && <Dashboard equipment={equipment} setPage={navigate} />}
               {page === "peralatan" && <EquipmentPage rows={equipment} setRows={setEquipment} />}
+              {page === "sumber-daya-manusia" && <HumanResourcesPage />}
               {page === "sertifikasi" && (
                 <section className="panel">
                   <TabList defaultSelectedValue="jatuh-tempo"><Tab value="jatuh-tempo">Segera berakhir</Tab><Tab value="aktif">Aktif</Tab><Tab value="rencana">Rencana diklat</Tab></TabList>

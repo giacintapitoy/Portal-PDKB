@@ -125,6 +125,15 @@ td span { margin-top: 2px; color: var(--text-secondary); font-size: 11px; line-h
 .toolbar input, .toolbar select { font-size: 12px; }
 .equipment-notice { margin-bottom: 16px; border-radius: var(--radius-md) !important; }
 .equipment-management { overflow: visible; }
+.people-management { overflow: hidden; }
+.people-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--border-soft); }
+.person-card { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-rows: auto auto; align-items: center; gap: 4px 12px; padding: 18px; background: var(--surface); }
+.person-avatar { display: grid; width: 42px; height: 42px; grid-row: 1 / -1; place-items: center; border-radius: 50%; color: var(--primary-700); background: var(--primary-100); font-size: 12px; font-weight: 700; }
+.person-copy { min-width: 0; }
+.person-copy h3 { margin: 0; overflow: hidden; color: var(--text-primary); font-size: 13px; line-height: 19px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.person-copy p, .person-copy span { display: block; margin: 0; overflow: hidden; color: var(--text-secondary); font-size: 11px; line-height: 17px; text-overflow: ellipsis; white-space: nowrap; }
+.person-copy span { color: var(--text-muted); font-size: 10px; }
+.person-card > button { grid-column: 2 / -1; justify-self: start; min-height: 28px; padding-inline: 0; color: var(--primary-700) !important; font-size: 11px !important; }
 .feature-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px; border-bottom: 1px solid var(--border-soft); }
 .feature-toolbar h2 { margin: 0 0 2px; color: var(--text-primary); font-size: 16px; line-height: 24px; font-weight: 600; }
 .feature-toolbar p { margin: 0; color: var(--text-secondary); font-size: 11px; line-height: 16px; }
@@ -217,6 +226,8 @@ td span { margin-top: 2px; color: var(--text-secondary); font-size: 11px; line-h
   .toolbar [role="group"] { width: 100%; }
   .feature-toolbar { align-items: stretch; flex-direction: column; }
   .feature-toolbar button { width: 100%; }
+  .people-grid { grid-template-columns: 1fr; }
+  .person-card { padding: 16px; }
   .equipment-filters { grid-template-columns: 1fr; }
   .equipment-management th:nth-child(2), .equipment-management td:nth-child(2), .equipment-management th:nth-child(3), .equipment-management td:nth-child(3), .equipment-management th:nth-child(4), .equipment-management td:nth-child(4) { display: none; }
   .equipment-management th, .equipment-management td { padding-inline: 10px; }
