@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Division;
 use App\Models\Equipment;
 use App\Models\EquipmentCategory;
+use App\Models\Personnel;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
@@ -42,6 +43,17 @@ class DatabaseSeeder extends Seeder
                     'origin' => 'Pengadaan UPT Manado',
                 ],
             );
+        }
+
+        $personnel = [
+            ['employee_id' => 'PG-001', 'name' => 'Admin PDKB', 'team' => 'Manajemen PDKB', 'position' => 'Administrator', 'status' => 'active'],
+            ['employee_id' => 'PG-002', 'name' => 'Rian Tumbel', 'team' => 'PDKB GI', 'position' => 'Pelaksana PDKB TM', 'status' => 'active'],
+            ['employee_id' => 'PG-003', 'name' => 'Mario Rondonuwu', 'team' => 'PDKB Jaringan', 'position' => 'Pelaksana PDKB Jaringan', 'status' => 'active'],
+            ['employee_id' => 'PG-004', 'name' => 'Yolanda Waworuntu', 'team' => 'PDKB GI', 'position' => 'Pengawas Pekerjaan', 'status' => 'leave'],
+        ];
+
+        foreach ($personnel as $person) {
+            Personnel::updateOrCreate(['employee_id' => $person['employee_id']], $person);
         }
     }
 }
